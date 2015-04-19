@@ -8,8 +8,7 @@
 #define LD_DEST_INITIAL 0
 #define ADD_DEST_INITIAL 4
 #define LDSD_OFFSET_INITIAL 0
-#define REG_INCR 5
-#define MEM_INCR 8
+#define LDSD_OFFSET_INCR 8
 
 int main(int argc,char **argv)
 {
@@ -55,9 +54,23 @@ int main(int argc,char **argv)
         printf("ADDD F%d, F%d, F2\n", add_dest_counter, ld_dest_counter);
         printf("SD   F%d, %d(R1)\n", add_dest_counter, ldsd_offset_counter);
 
-        ld_dest_counter += REG_INCR;
-        add_dest_counter += REG_INCR;
-        ldsd_offset_counter += MEM_INCR;
+        ldsd_offset_counter += LDSD_OFFSET_INCR;
+
+        if(ld_dest_counter == 0)
+        {
+            ld_dest_counter = 1;
+            add_dest_counter = 5;
+        }
+        else if(ld_dest_counter == 1)
+        {
+            ld_dest_counter = 6;
+            add_dest_counter = 7;
+        }
+        else
+        {
+            ld_dest_counter += 2;
+            add_dest_counter += 2;
+        }
     }
     printf("SUBI R1, R1, %d\n", ldsd_offset_counter);
     printf("BNEZ R1, R2, Loopinit\n");
