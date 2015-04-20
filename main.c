@@ -25,8 +25,8 @@ int main(int argc,char **argv)
 
     if(argc <= 1)
     {
-        printf("ERROR: In main(...): ");
-        printf("Too few arguments have been passed!\n");
+        fprintf(stderr, "ERROR: In main(...): ");
+        fprintf(stderr, "Too few arguments have been passed!\n");
         exit(1);
     }
     else if(argc == 2)
@@ -38,22 +38,22 @@ int main(int argc,char **argv)
     }
     else if(argc >= 4)
     {
-        printf("ERROR: In main(...): ");
-        printf("Too many arguments have been passed!\n");
+        fprintf(stderr, "ERROR: In main(...): ");
+        fprintf(stderr, "Too many arguments have been passed!\n");
         exit(1);
     }
 
     if((LOOP_ITER % atoi(argv[1])) != 0)
     {
-        printf("ERROR: In main(...): ");
-        printf("The number of unrolls is not a divisor of the number of loop iterations!\n");
+        fprintf(stderr, "ERROR: In main(...): ");
+        fprintf(stderr, "The number of unrolls is not a divisor of the number of loop iterations!\n");
         exit(1);
     }
 
     if(atoi(argv[1]) <= 0 || atoi(argv[1]) > LOOP_ITER)
     {
-        printf("ERROR: In main(...): ");
-        printf("The number of unrolls is not in the proper range!\n");
+        fprintf(stderr, "ERROR: In main(...): ");
+        fprintf(stderr, "The number of unrolls is not in the proper range!\n");
         exit(1);
     }
 
