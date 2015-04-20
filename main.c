@@ -1,9 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define DEBUG
-
-#define NUMBER_OF_ARGS 2
 #define LOOP_ITER 120
 #define LD_DEST_INITIAL 0
 #define LD_DEST_1ITER 1
@@ -26,10 +23,23 @@ int main(int argc,char **argv)
     // Check Input Arguments
     // =============================================================================================
 
-    if(argc != NUMBER_OF_ARGS+1)
+    if(argc <= 1)
     {
         printf("ERROR: In main(...): ");
-        printf("The correct number of arguments has not been passed!\n");
+        printf("Too few arguments have been passed!\n");
+        exit(1);
+    }
+    else if(argc == 2)
+    {
+    }
+    else if(argc == 3)
+    {
+        freopen(argv[2], "w", stdout);
+    }
+    else if(argc >= 4)
+    {
+        printf("ERROR: In main(...): ");
+        printf("Too many arguments have been passed!\n");
         exit(1);
     }
 
@@ -37,6 +47,13 @@ int main(int argc,char **argv)
     {
         printf("ERROR: In main(...): ");
         printf("The number of unrolls is not a divisor of the number of loop iterations!\n");
+        exit(1);
+    }
+
+    if(atoi(argv[1]) <= 0 || atoi(argv[1]) >= LOOP_ITER)
+    {
+        printf("ERROR: In main(...): ");
+        printf("The number of unrolls is not in the proper range!\n");
         exit(1);
     }
 
@@ -55,10 +72,6 @@ int main(int argc,char **argv)
     // =============================================================================================
     // Print File
     // =============================================================================================
-
-    #ifndef DEBUG
-        freopen(argv[2], "w", stdout);
-    #endif // DEBUG
 
     printf("Loopinit:\n");
     for(i = 0; i < k; i++)
@@ -91,16 +104,17 @@ int main(int argc,char **argv)
     printf("SUBI R1, R1, %d\n", ldsd_offset_counter);
     printf("BNEZ R1, R2, Loopinit\n");
 
+    // =============================================================================================
+    // Print Statistics
+    // =============================================================================================
+
     printf("\n");
     printf("===================================================\n");
+    printf("Number of Unrolls: %d\n\n", k);
     printf("Number of Integer Registers: %d\n", rreg_count);
     printf("Number of Floating Point Registers: %d\n", freg_count);
     printf("Number of Registers: %d\n", reg_count);
     printf("===================================================\n");
-
-    #ifndef DEBUG
-        fclose(stdout);
-    #endif // DEBUG
 
     // =============================================================================================
     // End
