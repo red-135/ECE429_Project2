@@ -50,7 +50,7 @@ int main(int argc,char **argv)
         exit(1);
     }
 
-    if(atoi(argv[1]) <= 0 || atoi(argv[1]) >= LOOP_ITER)
+    if(atoi(argv[1]) <= 0 || atoi(argv[1]) > LOOP_ITER)
     {
         printf("ERROR: In main(...): ");
         printf("The number of unrolls is not in the proper range!\n");
