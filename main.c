@@ -6,9 +6,19 @@
 #define NUMBER_OF_ARGS 2
 #define LOOP_ITER 120
 #define LD_DEST_INITIAL 0
+#define LD_DEST_1ITER 1
+#define LD_DEST_2ITER 6
+#define LD_DEST_INCR 2
 #define ADD_DEST_INITIAL 4
+#define ADD_DEST_1ITER 5
+#define ADD_DEST_2ITER 7
+#define ADD_DEST_INCR 2
 #define LDSD_OFFSET_INITIAL 0
 #define LDSD_OFFSET_INCR 8
+#define RREG_INITIAL 2
+#define RREG_INCR 0
+#define FREG_INITIAL 1
+#define FREG_INCR 2
 
 int main(int argc,char **argv)
 {
@@ -37,6 +47,9 @@ int main(int argc,char **argv)
     int ld_dest_counter = LD_DEST_INITIAL;
     int add_dest_counter = ADD_DEST_INITIAL;
     int ldsd_offset_counter = LDSD_OFFSET_INITIAL;
+    int rreg_count = RREG_INITIAL;
+    int freg_count = FREG_INITIAL;
+    int reg_count = 0;
     int i = 0; int k = atoi(argv[1]);
 
     // =============================================================================================
@@ -54,26 +67,36 @@ int main(int argc,char **argv)
         printf("ADDD F%d, F%d, F2\n", add_dest_counter, ld_dest_counter);
         printf("SD   F%d, %d(R1)\n", add_dest_counter, ldsd_offset_counter);
 
-        ldsd_offset_counter += LDSD_OFFSET_INCR;
-
         if(ld_dest_counter == 0)
         {
-            ld_dest_counter = 1;
-            add_dest_counter = 5;
+            ld_dest_counter = LD_DEST_1ITER;
+            add_dest_counter = ADD_DEST_1ITER;
         }
         else if(ld_dest_counter == 1)
         {
-            ld_dest_counter = 6;
-            add_dest_counter = 7;
+            ld_dest_counter = LD_DEST_2ITER;
+            add_dest_counter = ADD_DEST_2ITER;
         }
         else
         {
-            ld_dest_counter += 2;
-            add_dest_counter += 2;
+            ld_dest_counter += LD_DEST_INCR;
+            add_dest_counter += ADD_DEST_INCR;
         }
+        ldsd_offset_counter += LDSD_OFFSET_INCR;
+
+        rreg_count += RREG_INCR;
+        freg_count += FREG_INCR;
+        reg_count = rreg_count + freg_count;
     }
     printf("SUBI R1, R1, %d\n", ldsd_offset_counter);
     printf("BNEZ R1, R2, Loopinit\n");
+
+    printf("\n");
+    printf("===================================================\n");
+    printf("Number of Integer Registers: %d\n", rreg_count);
+    printf("Number of Floating Point Registers: %d\n", freg_count);
+    printf("Number of Registers: %d\n", reg_count);
+    printf("===================================================\n");
 
     #ifndef DEBUG
         fclose(stdout);
