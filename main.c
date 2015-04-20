@@ -112,7 +112,7 @@ int main(int argc,char **argv)
         freg_count += FREG_INCR;
         reg_count = rreg_count + freg_count;
     }
-    printf("SUBI R1, R1, %d\n", ldsd_offset_counter);
+    printf("ADDI R1, R1, %d\n", ldsd_offset_counter);
     printf("BNEZ R1, R2, Loopinit\n");
 
     // =============================================================================================
