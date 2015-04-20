@@ -22,7 +22,7 @@
 #define ADD_DEST_2ITER 7
 #define ADD_DEST_INCR 2
 #define LDSD_OFFSET_INITIAL 0
-#define LDSD_OFFSET_INCR 8
+#define LDSD_OFFSET_INCR -8
 #define RREG_INITIAL 2
 #define RREG_INCR 0
 #define FREG_INITIAL 1
