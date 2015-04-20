@@ -1,3 +1,14 @@
+// Note that this code has been written (1) to reproduce the exact block of code given for k = 1
+// and (2) to produce a solution that utilizes a minimal number of registers for k > 1.Although
+// this requires some special handling of the register numbering at the beginning of the unrolling
+// due to the placement of the constant register F2 and the initial numbering of the registers F0
+// and F4, it means that constraints on the number of registers used can be met without extra
+// register renaming.
+//
+// During the unrolling, the registers F0 and F4 are used in the first iteration, the registers
+// F1 and F5 are used in the second iteration, the registers F6 and F7 are used in the third
+// iteration, the registers F8 and F9 are used in the fourth iteration, and so on.
+
 #include <stdio.h>
 #include <stdlib.h>
 
