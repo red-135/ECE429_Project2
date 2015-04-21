@@ -112,7 +112,7 @@ int main(int argc, char **argv)
 
     // Assign non-repeated instructions to strings
     sprintf(instr[3][0], "ADDI R1, R1, %d\n", ldsd_offset_counter);
-    sprintf(instr[4][0], "BNEZ R1, R2, Loopinit\n");
+    sprintf(instr[4][0], "BNE  R1, R2, Loopinit\n");
 
     // =============================================================================================
     // Print Code and Statistics
