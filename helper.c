@@ -27,12 +27,15 @@ void check_argument_k(int argc, char** argv)
         fprintf(stderr, "The number of unrolls is not in the proper range!\n");
         exit(1);
     }
-    else if((LOOP_ITER % k) != 0)
-    {
-        fprintf(stderr, "ERROR: In main(...): ");
-        fprintf(stderr, "The number of unrolls is not a divisor of the number of loop iterations!\n");
-        exit(1);
-    }
+    //
+    //Include if k is restricted to integer divisors of 120.
+    //
+    //  else if((LOOP_ITER % k) != 0)
+    //  {
+    //      fprintf(stderr, "ERROR: In main(...): ");
+    //      fprintf(stderr, "The number of unrolls is not a divisor of the number of loop iterations!\n");
+    //      exit(1);
+    //  }
 }
 
 void redirect_output(int argc, char** argv)
@@ -56,6 +59,13 @@ void print_code_unscheduled(int k, char label[BUF_SIZE], char instr[NUM_OF_INSTR
     }
     printf("%s", instr[3][0]);
     printf("%s", instr[4][0]);
+
+    for(i = 0; i < LOOP_ITER % k; i++)
+    {
+        printf("%s", instr[0][i]);
+        printf("%s", instr[1][i]);
+        printf("%s", instr[2][i]);
+    }
 }
 
 void print_code_scheduled(int k, char label[BUF_SIZE], char instr[NUM_OF_INSTR][LOOP_ITER][BUF_SIZE])
@@ -71,6 +81,13 @@ void print_code_scheduled(int k, char label[BUF_SIZE], char instr[NUM_OF_INSTR][
         printf("%s", instr[2][i]);
     printf("%s", instr[3][0]);
     printf("%s", instr[4][0]);
+
+    for(i = 0; i < LOOP_ITER % k; i++)
+        printf("%s", instr[0][i]);
+    for(i = 0; i < LOOP_ITER % k; i++)
+        printf("%s", instr[1][i]);
+    for(i = 0; i < LOOP_ITER % k; i++)
+        printf("%s", instr[2][i]);
 }
 
 void print_statistics(int k, int r, int s, int rreg_count, int freg_count)
