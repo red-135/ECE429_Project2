@@ -1,53 +1,46 @@
-// Note that this code has been written (1) to reproduce the exact block of code given for k = 1
-// and (2) to produce a solution that utilizes a minimal number of registers for k > 1.Although
-// this requires some special handling of the register numbering at the beginning of the unrolling
-// due to the placement of the constant register F2 and the initial numbering of the registers F0
-// and F4, it means that constraints on the number of registers used can be met without extra
-// register renaming.
-//
-// During the unrolling, the registers F0 and F4 are used in the first iteration, the registers
-// F1 and F5 are used in the second iteration, the registers F6 and F7 are used in the third
-// iteration, the registers F8 and F9 are used in the fourth iteration, and so on.
+// Note that this code has been written to produce a solution that utilizes a minimal number of
+// registers. Although this requires some special handling of the register numbering at the
+// beginning of the unrolling due to the placement of the constant register, it means that
+// constraints on the number of registers used can be met without extra register renaming.
 
 #include <stdio.h>
 #include <stdlib.h>
 
 #define LOOP_ITER 120
-#define LD_DEST_INITIAL 0
-#define LD_DEST_1ITER 1
-#define LD_DEST_2ITER 6
-#define LD_DEST_INCR 2
-#define ADD_DEST_INITIAL 4
-#define ADD_DEST_1ITER 5
-#define ADD_DEST_2ITER 7
-#define ADD_DEST_INCR 2
+#define CONST_REG 2
 #define LDSD_OFFSET_INITIAL 0
 #define LDSD_OFFSET_INCR -8
 #define RREG_INITIAL 2
-#define RREG_INCR 0
 #define FREG_INITIAL 1
-#define FREG_INCR 2
 
 int main(int argc,char **argv)
 {
+
+    int LD_DEST_INITIAL = -1;
+    int LD_DEST_INCR = -1;
+    int ADD_DEST_INITIAL = -1;
+    int ADD_DEST_INCR = -1;
+    int FREG_INCR = -1;
+    int RREG_INCR = -1;
+
     // =============================================================================================
     // Check Input Arguments
     // =============================================================================================
 
-    if(argc <= 1)
+    if(argc <= 2)
     {
         fprintf(stderr, "ERROR: In main(...): ");
         fprintf(stderr, "Too few arguments have been passed!\n");
         exit(1);
     }
-    else if(argc == 2)
-    {
-    }
     else if(argc == 3)
     {
-        freopen(argv[2], "w", stdout);
     }
-    else if(argc >= 4)
+    else if(argc == 4)
+    {
+        freopen(argv[3], "w", stdout);
+    }
+    else if(argc >= 5)
     {
         fprintf(stderr, "ERROR: In main(...): ");
         fprintf(stderr, "Too many arguments have been passed!\n");
@@ -68,17 +61,40 @@ int main(int argc,char **argv)
         exit(1);
     }
 
+    if(atoi(argv[2]) == 0)
+    {
+        LD_DEST_INITIAL = 0;
+        LD_DEST_INCR = 2;
+        ADD_DEST_INITIAL = 1;
+        ADD_DEST_INCR = 2;
+        FREG_INCR = 2;
+        RREG_INCR = 0;
+    }
+    else
+    {
+        LD_DEST_INITIAL = 0;
+        LD_DEST_INCR = 1;
+        ADD_DEST_INITIAL = 0;
+        ADD_DEST_INCR = 1;
+        FREG_INCR = 1;
+        RREG_INCR = 0;
+    }
+
     // =============================================================================================
     // Declare Variables
     // =============================================================================================
 
-    int ld_dest_counter = LD_DEST_INITIAL;
-    int add_dest_counter = ADD_DEST_INITIAL;
+    int ld_dest_counter_cur = LD_DEST_INITIAL;
+    int ld_dest_counter_next = LD_DEST_INITIAL;
+    int add_dest_counter_cur = ADD_DEST_INITIAL;
+    int add_dest_counter_next = ADD_DEST_INITIAL;
     int ldsd_offset_counter = LDSD_OFFSET_INITIAL;
     int rreg_count = RREG_INITIAL;
     int freg_count = FREG_INITIAL;
     int reg_count = 0;
-    int i = 0; int k = atoi(argv[1]);
+    int i = 0;
+    int k = atoi(argv[1]);
+    int r = atoi(argv[2]);
 
     // =============================================================================================
     // Print File
@@ -87,25 +103,31 @@ int main(int argc,char **argv)
     printf("Loopinit:\n");
     for(i = 0; i < k; i++)
     {
-        printf("LD   F%d, %d(R1)\n", ld_dest_counter, ldsd_offset_counter);
-        printf("ADDD F%d, F%d, F2\n", add_dest_counter, ld_dest_counter);
-        printf("SD   F%d, %d(R1)\n", add_dest_counter, ldsd_offset_counter);
-
-        if(ld_dest_counter == 0)
+        if(ld_dest_counter_cur == CONST_REG)
         {
-            ld_dest_counter = LD_DEST_1ITER;
-            add_dest_counter = ADD_DEST_1ITER;
+            ++ld_dest_counter_cur;
+            ++add_dest_counter_cur;
+            ld_dest_counter_next += ADD_DEST_INCR+1;
+            add_dest_counter_next += ADD_DEST_INCR+1;
         }
-        else if(ld_dest_counter == 1)
+        else if(add_dest_counter_cur == CONST_REG)
         {
-            ld_dest_counter = LD_DEST_2ITER;
-            add_dest_counter = ADD_DEST_2ITER;
+            ++add_dest_counter_cur;
+            ld_dest_counter_next += ADD_DEST_INCR+1;
+            add_dest_counter_next += ADD_DEST_INCR+1;
         }
         else
         {
-            ld_dest_counter += LD_DEST_INCR;
-            add_dest_counter += ADD_DEST_INCR;
+            ld_dest_counter_next += LD_DEST_INCR;
+            add_dest_counter_next += ADD_DEST_INCR;
         }
+
+        printf("LD   F%d, %d(R1)\n", ld_dest_counter_cur, ldsd_offset_counter);
+        printf("ADDD F%d, F%d, F%d\n", add_dest_counter_cur, ld_dest_counter_cur, CONST_REG);
+        printf("SD   F%d, %d(R1)\n", add_dest_counter_cur, ldsd_offset_counter);
+
+        ld_dest_counter_cur = ld_dest_counter_next;
+        add_dest_counter_cur = add_dest_counter_next;
         ldsd_offset_counter += LDSD_OFFSET_INCR;
 
         rreg_count += RREG_INCR;
@@ -121,7 +143,8 @@ int main(int argc,char **argv)
 
     printf("\n");
     printf("===================================================\n");
-    printf("Number of Unrolls: %d\n\n", k);
+    printf("Number of Unrolls: %d\n", k);
+    printf("Register Reuse Allowed: %s\n\n", r?"Yes":"No");
     printf("Number of Integer Registers: %d\n", rreg_count);
     printf("Number of Floating Point Registers: %d\n", freg_count);
     printf("Number of Registers: %d\n", reg_count);
